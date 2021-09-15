@@ -1,0 +1,6 @@
+# bins
+bin/
+
+# 
+*.tab.*
+lex.yy.c
