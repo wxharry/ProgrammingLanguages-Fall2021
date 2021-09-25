@@ -53,7 +53,6 @@ line : EOL
      ;
 
 calculation : expr
-            | function
             | assignment
             ;
 
