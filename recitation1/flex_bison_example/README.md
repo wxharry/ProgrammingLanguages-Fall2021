@@ -16,10 +16,8 @@ g++ lex.yy.c filename.tab.c -o filename
 
 ### Or you can use makefile
 ```
-make bison
-make flex
-make build
-make all
-make run 
-make clean
+make            # build and run
+make build      # build filename
+make run        # run filename
+make clean      # clean directory
 ```

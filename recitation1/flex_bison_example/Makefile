@@ -1,22 +1,21 @@
 filename=calc1
-	
-# build bison file
-bison: $(filename).y
+
+all: build run
+
+$(filename).tab.c $(filename).tab.h: $(filename).y
 	bison -d $(filename).y
 
-# build flex file
-flex: $(filename).l
+lex.yy.c: $(filename).l $(filename).tab.h
 	flex $(filename).l
 
-# build executable file
-build: lex.yy.c $(filename).tab.c
+build: lex.yy.c $(filename).tab.c $(filename).tab.h
 	g++ lex.yy.c $(filename).tab.c -o bin/$(filename)
 
-# build executable file from bison and flex
-all: $(filename).l $(filename).y 
-	bison -d $(filename).y
-	flex $(filename).l
-	g++ lex.yy.c $(filename).tab.c -o bin/$(filename)
+bin: 
+	mkdir bin
+
+bin/$(filename): bin lex.yy.c $(filename).tab.c
+	make build
 
 # run program
 run: bin/$(filename)
