@@ -17,8 +17,8 @@
 "/"                     { return DIV; }
 "("                     { return L_BRACKET; }
 ")"                     { return R_BRACKET; }
+[\n]                    { return EOL;}
 [ \t\r]+                { /* Ignore white characters. */ }
-[ \n]                   { return EOL;}
 .                       { std::cerr << "Invalid token" << std::endl; exit(1); }
 
 %%

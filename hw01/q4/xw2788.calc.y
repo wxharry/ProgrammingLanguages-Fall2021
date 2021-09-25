@@ -30,9 +30,10 @@ int yyerror(const char *p) { std::cerr << "error: " << p << std::endl; };
 %token CEL_TO_FAH FAH_TO_CEL
 %token MI_TO_KM KM_TO_MI
 
-%token <val> NUMBER    /* 'val' is the (only) field declared in %union
+%token <val> NUMBER     /* 'val' is the (only) field declared in %union
                        which represents the type of the token. */
-%type <val> expr function
+%type <val> constant
+%type <val> expr function calculation line program_input
 
 /* Resolve the ambiguity of the grammar by defining precedence. */
 
@@ -44,14 +45,15 @@ int yyerror(const char *p) { std::cerr << "error: " << p << std::endl; };
 %%
 
 program_input : /* EPSILON */
-              | program_input line;
+              | program_input line  {$$ = $2;}
+              ;
 
-line : EOL
-     | calculation EOL
+line : EOL                         {std::cout << "eol" << std::endl;}
+     | calculation EOL             {std::cout << "= " << $1 << std::endl;}
      ;
 
-calculation : expr              {std::cout << $1 << std::endl;}
-            | function          {std::cout << $1 << std::endl;}
+calculation : expr
+            | function
             | assignment
             ;
 
@@ -109,7 +111,8 @@ dist_conversion : expr MI_TO_KM
                 | expr KM_TO_MI
                 ;
 
-assignment: VAR_KEYWORD VARIABLE EQUALS calculation;
+assignment: VAR_KEYWORD VARIABLE EQUALS calculation
+          ;
 
 %%
 
