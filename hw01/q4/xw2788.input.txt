@@ -1,8 +1,41 @@
-1 + 1        
 1+2*3
 1 * 4 + 2
 1 * (4/2) - 5
-
-
+10 mi_to_km
+(10 mi_to_km)*10 + 5
+log10 67
+abs -10
+abs 45
 5 mod 7
 5 mod 2
+PI
+pi * 6 + 1
+sin PI/2
+sin PI
+sin -PI
+
+
+6!
+SQRT 1024
+SQRT 2
+floor (2+3/10)
+CEIL -(3+2^  3/10)
+cos PI
+sin -PI/4
+SIN 45
+tan PI/2
+TAN 12
+log2 1024
+log2 0
+log2 -10
+10 KM_TO_MI
+10 MI_TO_KM
+10 FAH_TO_CEL
+10 CEL_TO_FAH
+10 GBP_TO_USD
+10 USD_TO_GBP
+10 GBP_TO_EURO
+10 EURO_TO_GBP
+10 USD_TO_EURO
+10 EURO_TO_USD
+

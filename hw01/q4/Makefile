@@ -17,6 +17,14 @@ build: bin lex.yy.c $(filename).tab.c $(filename).tab.h
 bin/$(filename): bin lex.yy.c $(filename).tab.c
 	make build
 
+xw2788.input.txt:
+	touch xw2788.input.txt
+
+cmd: xw2788.input.txt
+	@mv xw2788.input.txt ../xw2788.input.txt
+	make
+	@mv ../xw2788.input.txt xw2788.input.txt
+
 # run program
 run: bin bin/$(filename)
 	./bin/$(filename)

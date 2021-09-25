@@ -1,10 +1,13 @@
 %{
 #include <iostream>
 #include <cstdio>
+#include <cmath>
+#include <map>
+
 #include "util.h"
-#include <math.h>
 using namespace std;
 
+#define CONST_PI 3.14
 int yylex(); // A function that is to be generated and provided by flex,
              // which returns a next token when called repeatedly.
 int yyerror(const char *p) { cerr << "error: " << p << endl; };
@@ -36,7 +39,8 @@ extern FILE *yyin;
 
 
 %type <val> constant
-%type <val> expr function calculation line program_input
+%type <val> expr calculation line program_input
+%type <val> function trig_function log_function
 %type <val> conversion temp_conversion dist_conversion
 
 /* Resolve the ambiguity of the grammar by defining precedence. */
@@ -52,15 +56,15 @@ program_input : /* EPSILON */
               | program_input line  {$$ = $2;}
               ;
 
-line : EOL
-     | calculation EOL             {printf("= %.2f\n", $1);}
+line : EOL                          {cout << endl;}
+     | calculation EOL              {printf("= %.2f\n", $1);}
      ;
 
 calculation : expr
             | assignment
             ;
 
-constant : PI                       {$$ = 3.14;}
+constant : PI                       {$$ = CONST_PI;}
          ;
 
 expr : SUB expr                     {$$ = 0 - $2;}
@@ -81,38 +85,38 @@ expr : SUB expr                     {$$ = 0 - $2;}
 function : conversion
          | log_function
          | trig_function
-         | expr FACTORIAL
-         | SQRT expr
-         | ABS expr
-         | FLOOR expr
-         | CEIL expr
+         | expr FACTORIAL           {$$ = factorial($1);}
+         | SQRT expr                {$$ = sqrt($2);}
+         | ABS expr                 {$$ = abs($2);}
+         | FLOOR expr               {$$ = floor($2);}
+         | CEIL expr                {$$ = ceil($2);}
          ;
 
-trig_function : COS expr
-              | SIN expr
-              | TAN expr
+trig_function : COS expr            {$$ = cos($2);}
+              | SIN expr            {$$ = sin($2);}
+              | TAN expr            {$$ = tan($2);}
               ;
 
-log_function : LOG2 expr
-             | LOG10 expr
+log_function : LOG2 expr            {$$ = log($2)/log(2);} 
+             | LOG10 expr           {$$ = log10($2);}
              ;
 
 conversion : temp_conversion
            | dist_conversion
-           | expr GBP_TO_USD
-           | expr USD_TO_GBP
-           | expr GBP_TO_EURO
-           | expr EURO_TO_GBP
-           | expr USD_TO_EURO
-           | expr EURO_TO_USD
+           | expr GBP_TO_USD        { $$ = gbp_to_usd($1);}
+           | expr USD_TO_GBP        { $$ = usd_to_gbp($1);}
+           | expr GBP_TO_EURO       { $$ = gbp_to_euro($1);}
+           | expr EURO_TO_GBP       { $$ = euro_to_gbp($1);}
+           | expr USD_TO_EURO       { $$ = usd_to_euro($1);}
+           | expr EURO_TO_USD       { $$ = euro_to_usd($1);}
            ;
 
-temp_conversion : expr CEL_TO_FAH  
-                | expr FAH_TO_CEL
+temp_conversion : expr CEL_TO_FAH   { $$ = cel_to_fah($1);}
+                | expr FAH_TO_CEL   { $$ = fah_to_cel($1);}
                 ;
 
-dist_conversion : expr MI_TO_KM   
-                | expr KM_TO_MI
+dist_conversion : expr MI_TO_KM     { $$ = m_to_km($1);}
+                | expr KM_TO_MI     { $$ = km_to_m($1);}
                 ;
 
 assignment: VAR_KEYWORD VARIABLE EQUALS calculation
@@ -122,12 +126,11 @@ assignment: VAR_KEYWORD VARIABLE EQUALS calculation
 
 int main(int, char**)
 {
-             
     // open a file handle to a particular file:
     FILE *myfile = fopen("xw2788.input.txt", "r");
     // make sure it's valid:
     if (!myfile) {
-        cout << "I can't open input.txt!" << endl;
+        cout << "Cannot find xw2788.input.txt!" << endl;
         cout << "Please input in the command line:" << endl;
     }else{
         yyin = myfile;
