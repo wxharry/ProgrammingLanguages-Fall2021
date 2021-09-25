@@ -1,5 +1,6 @@
 %{
 #include <iostream>
+#include <cstdio>
 #include <math.h>
 
 int yylex(); // A function that is to be generated and provided by flex,
@@ -8,9 +9,7 @@ int yyerror(const char *p) { std::cerr << "error: " << p << std::endl; };
 %}
 
 %union {
-    int val;
-    /* You may include additional fields as you want. */
-    /* char op; */
+    float val;
 };
 
 %start program_input
@@ -30,8 +29,9 @@ int yyerror(const char *p) { std::cerr << "error: " << p << std::endl; };
 %token CEL_TO_FAH FAH_TO_CEL
 %token MI_TO_KM KM_TO_MI
 
-%token <val> NUMBER     /* 'val' is the (only) field declared in %union
-                       which represents the type of the token. */
+%token <val> NUMBER
+
+
 %type <val> constant
 %type <val> expr function calculation line program_input
 
@@ -39,8 +39,8 @@ int yyerror(const char *p) { std::cerr << "error: " << p << std::endl; };
 
 /* Order of directives will determine the precedence. */
 %left ADD SUB    /* left means left-associativity. */
-%left DIV MUL 
-%left POW MOD
+%left DIV MUL MOD
+%left POW 
 
 %%
 
@@ -48,8 +48,8 @@ program_input : /* EPSILON */
               | program_input line  {$$ = $2;}
               ;
 
-line : EOL                         {std::cout << "eol" << std::endl;}
-     | calculation EOL             {std::cout << "= " << $1 << std::endl;}
+line : EOL
+     | calculation EOL             {std::printf("= %.2f\n", $1);}
      ;
 
 calculation : expr
@@ -57,7 +57,8 @@ calculation : expr
             | assignment
             ;
 
-constant : PI;
+constant : PI                       {$$ = 3.14;}
+         ;
 
 expr : SUB expr                     {$$ = 0 - $2;}
      | NUMBER                       
@@ -68,7 +69,7 @@ expr : SUB expr                     {$$ = 0 - $2;}
      | expr SUB expr                {$$ = $1 - $3;}
      | expr DIV expr                {$$ = $1 / $3;}
      | expr MUL expr                {$$ = $1 * $3;}
-     | expr MOD expr                {$$ = $1 % $3;}
+     | expr MOD expr                {$$ = int($1) % int($3);}
      | expr POW expr                {$$ = pow($1, $3);}
      | L_BRACKET expr R_BRACKET     {$$ = $2;}
      ;
