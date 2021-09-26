@@ -12,10 +12,12 @@ int yylex(); // A function that is to be generated and provided by flex,
              // which returns a next token when called repeatedly.
 int yyerror(const char *p) { cerr << "error: " << p << endl; };
 extern FILE *yyin;
+map<string, float> dictionary;
 %}
 
 %union {
     double val;
+    char *var;
 };
 
 %start program_input
@@ -28,7 +30,7 @@ extern FILE *yyin;
 %token CEIL FLOOR
 %token SIN COS TAN
 %token FACTORIAL // !
-%token VARIABLE EQUALS VAR_KEYWORD
+%token EQUALS VAR_KEYWORD
 
 %token GBP_TO_USD USD_TO_GBP GBP_TO_EURO
 %token EURO_TO_GBP USD_TO_EURO EURO_TO_USD
@@ -36,10 +38,10 @@ extern FILE *yyin;
 %token MI_TO_KM KM_TO_MI
 
 %token <val> NUMBER
-
+%token <var> VARIABLE
 
 %type <val> constant
-%type <val> expr calculation line program_input
+%type <val> expr assignment calculation line program_input
 %type <val> function trig_function log_function
 %type <val> conversion temp_conversion dist_conversion
 
@@ -52,7 +54,7 @@ extern FILE *yyin;
 
 %%
 
-program_input : /* EPSILON */
+program_input : /* EPSILON */       {cout << "start calculator" << endl;}
               | program_input line  {$$ = $2;}
               ;
 
@@ -69,7 +71,7 @@ constant : PI                       {$$ = CONST_PI;}
 
 expr : SUB expr                     {$$ = 0 - $2;}
      | NUMBER                       
-     | VARIABLE
+     | VARIABLE                     {$$ = dictionary[$1];}
      | constant
      | function                     
      | expr ADD expr                {$$ = $1 + $3;}
@@ -119,7 +121,7 @@ dist_conversion : expr MI_TO_KM     { $$ = m_to_km($1);}
                 | expr KM_TO_MI     { $$ = km_to_m($1);}
                 ;
 
-assignment: VAR_KEYWORD VARIABLE EQUALS calculation
+assignment: VAR_KEYWORD VARIABLE EQUALS calculation { $$ = $4; dictionary[$2] = $4;}
           ;
 
 %%

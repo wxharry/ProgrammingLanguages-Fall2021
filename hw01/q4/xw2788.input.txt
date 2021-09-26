@@ -39,3 +39,8 @@ log2 -10
 10 USD_TO_EURO
 10 EURO_TO_USD
 
+var x = 6
+var y= 3
+var z=4
+(x+y)*z
+
