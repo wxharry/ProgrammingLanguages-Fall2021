@@ -1,12 +1,13 @@
 filename=xw2788.calc
+inputfile=xw2788.input.txt
 
 all: build run
 
 $(filename).tab.c $(filename).tab.h: $(filename).y
-	bison -d $(filename).y
+	@bison -d $(filename).y
 
 lex.yy.c: $(filename).l $(filename).tab.h
-	flex $(filename).l
+	@flex $(filename).l
 
 bin: 
 	mkdir bin
@@ -17,17 +18,14 @@ build: bin lex.yy.c $(filename).tab.c $(filename).tab.h
 bin/$(filename): bin lex.yy.c $(filename).tab.c
 	make build
 
-xw2788.input.txt:
-	touch xw2788.input.txt
+cmd: bin bin/$(filename)
+	@./bin/$(filename) -c
 
-cmd: xw2788.input.txt
-	@mv xw2788.input.txt ../xw2788.input.txt
-	make
-	@mv ../xw2788.input.txt xw2788.input.txt
+file: bin bin/$(filename)
+	@./bin/$(filename) -f$(inputfile)
 
 # run program
-run: bin bin/$(filename)
-	./bin/$(filename)
+run: file
 
 clean:
 	@rm lex.yy.c *.tab.h *.tab.c
