@@ -1,7 +1,7 @@
-% ['hw4-xw2788-sol'].
+% ['hw4-xw2788-escape'].
 
 st(P, L) :- P==r,!, r(L).
-st(P, L) :- l(L).
+st(_, L) :- l(L).
 
 % Q1
 time(tokyo, 5).
@@ -14,7 +14,7 @@ team([tokyo, rio, berlin, denver]).
 
 % Q3
 max(A,B,B) :- A < B,!.
-max(A,B,A).
+max(A,_,A).
 
 cost([], 0).
 cost([P|PS], C) :- cost(PS, O), time(P, PC), max(PC, O, C). 
@@ -32,7 +32,7 @@ move(st(l, L1), st(r, L2), r(M), C) :- split(L1, M, L2), cost(M, C).
 % move(st(l, [tokyo, rio, berlin, denver]), st(r, [berlin, denver]), X, C).
 
 move(st(r, L1), st(l, [M|L1]), l(M), C) :- team(T), member(M, T), \+ member(M, L1), time(M, C).
-% move(st(r, [tokyo, rio]), st(l, [tokyo, rio, berlin]), l(M), C).
+% move(st(r, [rio, berlin]), st(l, [tokyo, rio, berlin]), l(M), C).
 
 % Q5 trans(I, F, M, C).
 trans(st(r, []), _, [], 0).
